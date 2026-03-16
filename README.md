@@ -115,3 +115,5 @@ The included `Jenkinsfile` runs:
 - Save/export analysis report
 - JD-specific skill taxonomy and weighting
 - Optional AI rewrite suggestions for weak bullets
+
+Webhook verification test commit: 2026-03-16 23:18:44
