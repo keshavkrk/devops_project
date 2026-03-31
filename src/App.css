@@ -122,7 +122,28 @@
   font-size: 1.05rem;
   font-weight: 400;
   line-height: 1.7;
-  opacity: 0.82;
+  opacity: 1;
+}
+
+.trust-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: var(--space-2);
+}
+
+.trust-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.32rem 0.72rem;
+  border-radius: 999px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--primary-strong);
+  background: var(--primary-soft);
+  border: 1px solid rgba(92, 124, 255, 0.2);
 }
 
 .hero-card {
@@ -131,14 +152,16 @@
   border: 1px solid var(--stroke);
   border-radius: var(--radius-lg);
   padding: var(--space-3);
-  box-shadow: var(--shadow-sm);
-  backdrop-filter: blur(16px);
-  transition: transform 260ms var(--ease-standard), box-shadow 260ms var(--ease-standard);
+  box-shadow: var(--shadow-xs);
+  opacity: 0.92;
+  transform: scale(0.98);
+  transition: transform 260ms var(--ease-standard), box-shadow 260ms var(--ease-standard), opacity 260ms var(--ease-standard);
 }
 
 .hero-card:hover {
-  transform: translateY(-4px) scale(1.01);
-  box-shadow: var(--shadow-md);
+  transform: translateY(-2px) scale(1.0);
+  box-shadow: var(--shadow-sm);
+  opacity: 1;
 }
 
 .hero-card-title {
@@ -178,16 +201,18 @@
   position: relative;
   margin-top: var(--space-1);
   border: 0;
-  border-radius: 14px;
-  padding: 0.72rem 1rem;
+  border-radius: 16px;
+  padding: 1rem 1.4rem;
+  min-height: 44px;
   color: #f8fbff;
-  font-size: 0.9rem;
+  font-size: 1rem;
   font-weight: 700;
   letter-spacing: 0.01em;
   cursor: pointer;
   background: linear-gradient(130deg, var(--primary-strong) 0%, var(--primary) 48%, #7090ff 100%);
   box-shadow: var(--shadow-button), inset 0 1px 0 rgba(255, 255, 255, 0.35);
   transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+  overflow: hidden;
 }
 
 .primary-button:hover {
@@ -197,7 +222,7 @@
 }
 
 .primary-button:active {
-  transform: translateY(0) scale(0.98);
+  transform: translateY(0) scale(0.96);
 }
 
 .panel {
@@ -212,6 +237,12 @@
   backdrop-filter: none;
   animation: rise 420ms var(--ease-standard) both;
   transition: transform 240ms var(--ease-standard), box-shadow 240ms var(--ease-standard), border-color 240ms var(--ease-standard);
+}
+
+.panel-primary {
+  border: 2px solid var(--primary);
+  box-shadow: var(--shadow-lg);
+  background: var(--surface-strong);
 }
 
 .panel::before {
@@ -317,6 +348,18 @@
 .dropzone.active::before {
   opacity: 1;
   animation: dashShift 2.8s linear infinite;
+}
+
+.dropzone.success {
+  border-color: var(--accent-success);
+  background: rgba(76, 182, 161, 0.06);
+  box-shadow: var(--shadow-xs), 0 0 0 4px rgba(76, 182, 161, 0.12);
+}
+
+.dropzone.error {
+  border-color: var(--warning);
+  background: rgba(202, 106, 79, 0.06);
+  box-shadow: var(--shadow-xs), 0 0 0 4px rgba(202, 106, 79, 0.12);
 }
 
 .dropzone.loading::after {
@@ -435,12 +478,13 @@
 }
 
 .score-card {
-  border: 1px solid rgba(0, 0, 0, 0.06);
+  border: 2px solid var(--primary);
   border-radius: var(--radius-md);
-  padding: var(--space-3);
-  background: rgba(255, 255, 255, 0.45);
-  box-shadow: var(--shadow-xs);
+  padding: var(--space-4);
+  background: linear-gradient(145deg, rgba(92, 124, 255, 0.08), rgba(255, 255, 255, 0.5));
+  box-shadow: var(--shadow-md);
   transition: transform 220ms var(--ease-standard), box-shadow 220ms var(--ease-standard), border-color 220ms var(--ease-standard);
+  animation: resultSlideIn 500ms var(--ease-standard) both;
 }
 
 .score-card:hover {
@@ -452,11 +496,16 @@
 .score {
   margin: 0;
   font-family: "Sora", "Inter", "Segoe UI", sans-serif;
-  font-size: clamp(2.4rem, 4.5vw, 3rem);
+  font-size: clamp(3rem, 6vw, 3.8rem);
+  font-weight: 900;
   line-height: 1;
   letter-spacing: -0.03em;
   color: var(--ink);
 }
+
+.score.score-high { color: #1a9e6c; }
+.score.score-mid  { color: #d68a2e; }
+.score.score-low  { color: #c94a3a; }
 
 .label {
   margin: 0.35rem 0 0.95rem;
@@ -478,7 +527,22 @@
   border-radius: inherit;
   background: linear-gradient(100deg, #5476ff 0%, var(--primary) 55%, #7f97ff 100%);
   box-shadow: 0 0 14px rgba(92, 124, 255, 0.38);
-  transition: width 360ms var(--ease-standard);
+  transition: width 600ms var(--ease-standard);
+}
+
+.meter.meter-high span {
+  background: linear-gradient(100deg, #1cbf7b 0%, #1a9e6c 55%, #28c985 100%);
+  box-shadow: 0 0 14px rgba(26, 158, 108, 0.38);
+}
+
+.meter.meter-mid span {
+  background: linear-gradient(100deg, #f0a948 0%, #d68a2e 55%, #f5b95c 100%);
+  box-shadow: 0 0 14px rgba(214, 138, 46, 0.38);
+}
+
+.meter.meter-low span {
+  background: linear-gradient(100deg, #e05a4a 0%, #c94a3a 55%, #e8695a 100%);
+  box-shadow: 0 0 14px rgba(201, 74, 58, 0.38);
 }
 
 .breakdown {
@@ -486,7 +550,7 @@
   gap: 0.36rem;
   color: var(--muted);
   font-weight: 600;
-  opacity: 0.85;
+  opacity: 1;
 }
 
 .grid {
@@ -502,7 +566,13 @@
   background: rgba(255, 255, 255, 0.45);
   box-shadow: var(--shadow-xs);
   transition: transform 220ms var(--ease-standard), box-shadow 220ms var(--ease-standard), border-color 220ms var(--ease-standard);
+  animation: resultSlideIn 500ms var(--ease-standard) both;
 }
+
+.app article:nth-child(1) { animation-delay: 80ms; }
+.app article:nth-child(2) { animation-delay: 160ms; }
+.app article:nth-child(3) { animation-delay: 240ms; }
+.app article:nth-child(4) { animation-delay: 320ms; }
 
 .app article:hover {
   transform: translateY(-2px);
@@ -554,7 +624,7 @@
   text-transform: uppercase;
   color: var(--muted);
   font-weight: 800;
-  opacity: 0.6;
+  opacity: 0.72;
 }
 
 .recommendation-list {
@@ -563,7 +633,7 @@
   display: grid;
   gap: 0.55rem;
   color: var(--muted);
-  opacity: 0.85;
+  opacity: 1;
 }
 
 .recommendation-list li {
@@ -661,6 +731,32 @@
   }
 }
 
+@keyframes resultSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes countUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.score-animate {
+  animation: countUp 400ms var(--ease-standard) both;
+}
+
 @media (max-width: 1040px) {
   .app {
     padding-top: var(--space-4);
@@ -684,7 +780,7 @@
 
 @media (max-width: 760px) {
   .app {
-    padding: var(--space-3) var(--space-2) 4rem;
+    padding: var(--space-3) var(--space-2) 5rem;
   }
 
   .dropzone {
@@ -705,6 +801,15 @@
 
   .ghost-button {
     justify-self: center;
+    min-height: 44px;
+  }
+
+  .primary-button {
+    position: sticky;
+    bottom: 1rem;
+    z-index: 10;
+    width: 100%;
+    min-height: 48px;
   }
 }
 

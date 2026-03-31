@@ -1,4 +1,4 @@
-﻿import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
 import { GlobalWorkerOptions, getDocument } from 'pdfjs-dist'
 import workerSrc from 'pdfjs-dist/build/pdf.worker.min.mjs?url'
@@ -206,6 +206,44 @@ function scoreLabel(score: number): string {
   return 'Needs work'
 }
 
+function scoreTier(score: number): 'high' | 'mid' | 'low' {
+  if (score >= 80) return 'high'
+  if (score >= 50) return 'mid'
+  return 'low'
+}
+
+function useAnimatedScore(target: number | null, duration = 600): number {
+  const [display, setDisplay] = useState(0)
+  const rafRef = useRef<number>(0)
+
+  useEffect(() => {
+    if (target === null) {
+      setDisplay(0)
+      return
+    }
+
+    const animTarget = target
+    const start = performance.now()
+    const from = 0
+
+    function tick(now: number) {
+      const elapsed = now - start
+      const progress = Math.min(elapsed / duration, 1)
+      const eased = 1 - Math.pow(1 - progress, 3)
+      setDisplay(Math.round(from + (animTarget - from) * eased))
+
+      if (progress < 1) {
+        rafRef.current = requestAnimationFrame(tick)
+      }
+    }
+
+    rafRef.current = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(rafRef.current)
+  }, [target, duration])
+
+  return display
+}
+
 function App() {
   const [resumeFileName, setResumeFileName] = useState('')
   const [resumeText, setResumeText] = useState('')
@@ -225,6 +263,9 @@ function App() {
     if (!resumeText || !jobDescription.trim()) return null
     return analyzeResume(resumeText, jobDescription)
   }, [resumeText, jobDescription])
+
+  const animatedScore = useAnimatedScore(analysis?.score.total ?? null)
+  const tier = analysis ? scoreTier(analysis.score.total) : null
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     const file = acceptedFiles[0]
@@ -270,6 +311,11 @@ function App() {
             Upload your resume and compare it with a job description to get a score,
             missing keywords, and section-level feedback.
           </p>
+          <div className="trust-bar">
+            <span className="trust-badge">✦ ATS Optimized</span>
+            <span className="trust-badge">⚡ Instant Results</span>
+            <span className="trust-badge">🎯 AI-Powered Analysis</span>
+          </div>
         </div>
         <div className="hero-card">
           <p className="hero-card-title">Session status</p>
@@ -286,7 +332,7 @@ function App() {
             {analysis ? 'Analysis ready' : 'Waiting for inputs'}
           </p>
           <button type="button" className="primary-button" onClick={resetSession}>
-            Reset session
+            {analysis ? 'Start New Analysis' : resumeText ? 'Waiting for Job Description…' : 'Analyze Resume in 3 Seconds'}
           </button>
         </div>
       </section>
@@ -295,7 +341,7 @@ function App() {
         <h2><span className="step">01</span>Upload Resume (PDF)</h2>
         <div
           {...getRootProps({
-            className: `dropzone ${isDragActive ? 'active' : ''} ${loading ? 'loading' : ''}`,
+            className: `dropzone ${isDragActive ? 'active' : ''} ${loading ? 'loading' : ''} ${error ? 'error' : resumeText ? 'success' : ''}`,
             'aria-busy': loading,
           })}
         >
@@ -324,7 +370,7 @@ function App() {
               ? 'Extracting text from your PDF...'
               : resumeFileName
                 ? `Loaded: ${resumeFileName}`
-                : 'PDF format only - one file at a time'}
+                : 'PDF only · Max 5MB'}
           </small>
         </div>
 
@@ -342,7 +388,7 @@ function App() {
         />
       </section>
 
-      <section className="panel">
+      <section className={`panel ${analysis ? 'panel-primary' : ''}`}>
         <h2><span className="step">03</span>Analysis</h2>
         {loading ? (
           <p className="hint shimmer-text">Extracting your resume and preparing analysis...</p>
@@ -353,9 +399,9 @@ function App() {
         ) : (
           <div className="results">
             <div className="score-card">
-              <p className="score">{analysis.score.total}/100</p>
+              <p className={`score score-animate score-${tier}`}>{animatedScore}/100</p>
               <p className="label">{scoreLabel(analysis.score.total)}</p>
-              <div className="meter">
+              <div className={`meter meter-${tier}`}>
                 <span style={{ width: `${analysis.score.total}%` }}></span>
               </div>
               <div className="breakdown">
