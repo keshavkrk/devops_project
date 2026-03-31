@@ -41,6 +41,10 @@ npm run build
 
 ## DevOps Lab: GitHub + Jenkins Setup
 
+For a cleaner final deployment, you can move Jenkins onto an Azure VM and let the same VM host the built app. That keeps the `GitHub -> webhook -> Jenkins` flow, but removes `ngrok`.
+
+- Azure VM deployment guide: `docs/azure-vm-jenkins-deploy.md`
+
 ### 1) Push project to GitHub (first time)
 
 ```bash
@@ -101,6 +105,18 @@ The included `Jenkinsfile` runs:
 2. Commit and push to GitHub
 3. Open Jenkins job and show the triggered build
 4. Open `Artifacts` in Jenkins and show files from `dist/`
+
+## Azure VM Deployment Option
+
+If you want a more production-like demo with no `ngrok`, use this flow:
+
+1. Push to GitHub
+2. GitHub webhook hits Jenkins on Azure VM
+3. Jenkins builds the project
+4. Jenkins deploys `dist/` to the same VM
+5. Nginx serves the app from the VM public IP
+
+The included `Jenkinsfile` now supports an optional Linux deploy stage when `DEPLOY_ROOT` is set in Jenkins.
 
 ## Notes
 

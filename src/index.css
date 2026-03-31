@@ -1,15 +1,15 @@
-﻿@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Sora:wght@500;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Sora:wght@600;700;800&display=swap');
 
 :root {
-  font-family: "Manrope", "Segoe UI", sans-serif;
+  font-family: "Inter", "Segoe UI", -apple-system, BlinkMacSystemFont, sans-serif;
   line-height: 1.5;
   font-weight: 500;
-  color: #152218;
+  color: #12182a;
   background:
-    radial-gradient(circle at 7% 10%, rgba(255, 198, 112, 0.28), transparent 35%),
-    radial-gradient(circle at 88% 4%, rgba(132, 234, 206, 0.3), transparent 30%),
-    radial-gradient(circle at 50% 92%, rgba(131, 181, 255, 0.24), transparent 42%),
-    linear-gradient(180deg, #fbf7ef 0%, #f4f8f3 48%, #f7f4ec 100%);
+    radial-gradient(circle at 8% 12%, rgba(92, 124, 255, 0.2), transparent 36%),
+    radial-gradient(circle at 88% 10%, rgba(76, 182, 161, 0.16), transparent 36%),
+    radial-gradient(circle at 56% 92%, rgba(240, 169, 120, 0.18), transparent 42%),
+    linear-gradient(180deg, #eef2ff 0%, #f5f8ff 46%, #f2f5fb 100%);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -24,18 +24,49 @@ body {
   margin: 0;
   min-height: 100vh;
   background: transparent;
+  color: inherit;
   background-image:
-    linear-gradient(rgba(28, 32, 38, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(28, 32, 38, 0.03) 1px, transparent 1px);
-  background-size: 24px 24px;
-  animation: gridShift 14s linear infinite;
+    radial-gradient(circle at 20% 24%, rgba(255, 255, 255, 0.46), transparent 32%),
+    linear-gradient(rgba(29, 42, 70, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(29, 42, 70, 0.05) 1px, transparent 1px);
+  background-size: auto, 34px 34px, 34px 34px;
+  background-position: center, 0 0, 0 0;
+  animation: gridShift 24s linear infinite;
+}
+
+#root {
+  min-height: 100vh;
 }
 
 @keyframes gridShift {
   from {
-    background-position: 0 0, 0 0;
+    background-position: center, 0 0, 0 0;
   }
   to {
-    background-position: 24px 12px, 24px 12px;
+    background-position: center, 34px 17px, 34px 17px;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color: #e8edff;
+    background:
+      radial-gradient(circle at 8% 12%, rgba(140, 162, 255, 0.17), transparent 35%),
+      radial-gradient(circle at 88% 10%, rgba(99, 200, 179, 0.14), transparent 35%),
+      radial-gradient(circle at 56% 92%, rgba(243, 191, 148, 0.15), transparent 42%),
+      linear-gradient(180deg, #0a1020 0%, #0c1223 45%, #0b1120 100%);
+  }
+
+  body {
+    background-image:
+      radial-gradient(circle at 20% 24%, rgba(255, 255, 255, 0.08), transparent 32%),
+      linear-gradient(rgba(167, 182, 220, 0.08) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(167, 182, 220, 0.08) 1px, transparent 1px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body {
+    animation: none;
   }
 }

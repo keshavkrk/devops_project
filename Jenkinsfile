@@ -52,11 +52,28 @@ pipeline {
         }
       }
     }
+
+    stage('Deploy to Azure VM') {
+      when {
+        expression {
+          return isUnix() && env.DEPLOY_ROOT?.trim()
+        }
+      }
+
+      steps {
+        sh 'bash scripts/deploy-static-site.sh'
+      }
+    }
   }
 
   post {
     success {
       archiveArtifacts artifacts: 'dist/**', fingerprint: true
+      script {
+        if (isUnix() && env.DEPLOY_ROOT?.trim()) {
+          echo "Deployment target updated at ${env.DEPLOY_ROOT}/current"
+        }
+      }
     }
     always {
       echo "Pipeline finished: ${currentBuild.currentResult}"

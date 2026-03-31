@@ -213,6 +213,14 @@ function App() {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
+  const resetSession = useCallback(() => {
+    setResumeFileName('')
+    setResumeText('')
+    setJobDescription('')
+    setError('')
+    setLoading(false)
+  }, [])
+
   const analysis = useMemo(() => {
     if (!resumeText || !jobDescription.trim()) return null
     return analyzeResume(resumeText, jobDescription)
@@ -264,10 +272,22 @@ function App() {
           </p>
         </div>
         <div className="hero-card">
-          <p className="hero-card-title">Live checklist</p>
-          <p>{resumeFileName ? 'Resume loaded' : 'Upload your resume PDF'}</p>
-          <p>{jobDescription.trim() ? 'JD added' : 'Paste job description'}</p>
-          <p>{analysis ? 'Analysis ready' : 'Waiting for inputs'}</p>
+          <p className="hero-card-title">Session status</p>
+          <p className={`status-line ${resumeFileName ? 'is-ready' : ''}`}>
+            <span className="status-dot" aria-hidden="true"></span>
+            {resumeFileName ? 'Resume loaded' : 'Upload your resume PDF'}
+          </p>
+          <p className={`status-line ${jobDescription.trim() ? 'is-ready' : ''}`}>
+            <span className="status-dot" aria-hidden="true"></span>
+            {jobDescription.trim() ? 'Job description added' : 'Paste job description'}
+          </p>
+          <p className={`status-line ${analysis ? 'is-ready' : ''}`}>
+            <span className="status-dot" aria-hidden="true"></span>
+            {analysis ? 'Analysis ready' : 'Waiting for inputs'}
+          </p>
+          <button type="button" className="primary-button" onClick={resetSession}>
+            Reset session
+          </button>
         </div>
       </section>
 
@@ -275,18 +295,37 @@ function App() {
         <h2><span className="step">01</span>Upload Resume (PDF)</h2>
         <div
           {...getRootProps({
-            className: `dropzone ${isDragActive ? 'active' : ''}`,
+            className: `dropzone ${isDragActive ? 'active' : ''} ${loading ? 'loading' : ''}`,
+            'aria-busy': loading,
           })}
         >
           <input {...getInputProps()} />
-          <p>
+          <div className="dropzone-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" focusable="false">
+              <path d="M12 3.5a.75.75 0 0 1 .75.75v8.19l2.22-2.22a.75.75 0 1 1 1.06 1.06l-3.5 3.5a.75.75 0 0 1-1.06 0l-3.5-3.5a.75.75 0 1 1 1.06-1.06l2.22 2.22V4.25A.75.75 0 0 1 12 3.5Z" />
+              <path d="M4.75 15.5a.75.75 0 0 1 .75.75v1.5A1.5 1.5 0 0 0 7 19.25h10a1.5 1.5 0 0 0 1.5-1.5v-1.5a.75.75 0 1 1 1.5 0v1.5a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3v-1.5a.75.75 0 0 1 .75-.75Z" />
+            </svg>
+          </div>
+          <div className="dropzone-copy">
+            <p className="dropzone-title">
+              {loading
+                ? 'Reading resume...'
+                : isDragActive
+                  ? 'Drop your PDF to upload'
+                  : 'Drag and drop your resume'}
+            </p>
+            <p className="dropzone-subtitle">
+              {isDragActive ? 'Release to start parsing the file.' : 'or click to browse your files'}
+            </p>
+          </div>
+          <span className="ghost-button">{loading ? 'Processing' : 'Choose file'}</span>
+          <small>
             {loading
-              ? 'Reading resume...'
-              : isDragActive
-                ? 'Drop the PDF here'
-                : 'Drag and drop a PDF here, or click to choose a file'}
-          </p>
-          {resumeFileName ? <small>Loaded: {resumeFileName}</small> : null}
+              ? 'Extracting text from your PDF...'
+              : resumeFileName
+                ? `Loaded: ${resumeFileName}`
+                : 'PDF format only - one file at a time'}
+          </small>
         </div>
 
         {error ? <p className="error">{error}</p> : null}
@@ -295,6 +334,7 @@ function App() {
       <section className="panel">
         <h2><span className="step">02</span>Paste Job Description</h2>
         <textarea
+          className="job-textarea"
           value={jobDescription}
           onChange={(event) => setJobDescription(event.target.value)}
           placeholder="Paste the target role description here..."
@@ -304,7 +344,9 @@ function App() {
 
       <section className="panel">
         <h2><span className="step">03</span>Analysis</h2>
-        {!analysis ? (
+        {loading ? (
+          <p className="hint shimmer-text">Extracting your resume and preparing analysis...</p>
+        ) : !analysis ? (
           <p className="hint">
             Upload a resume and add a job description to generate your report.
           </p>
@@ -377,7 +419,7 @@ function App() {
 
               <article>
                 <h3>Recommendations</h3>
-                <ul>
+                <ul className="recommendation-list">
                   {analysis.recommendations.map((recommendation) => (
                     <li key={recommendation}>{recommendation}</li>
                   ))}
